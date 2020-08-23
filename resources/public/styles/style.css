@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", Helvetica, Arial, sans serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: lightgray underline;
+}
+
+a:hover {
+  text-decoration: inherit;
+}
