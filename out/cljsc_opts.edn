@@ -1,1 +1,0 @@
-{:browser-repl true, :watch #object[cljs.closure$compilable_input_paths$reify__5341 0x4e210016 "cljs.closure$compilable_input_paths$reify__5341@4e210016"], :main website.core, :output-to "out/main.js", :output-dir "out", :aot-cache true}
