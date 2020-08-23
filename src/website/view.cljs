@@ -1,5 +1,6 @@
 (ns website.view)
 
+; Colors
 (def dark-color "#333232")
 (def light-color "#B7B7B7")
 (def very-light-color "#f1f2f3")
@@ -13,6 +14,15 @@
 (def medium-weight 500)
 (def semi-bold-weight 600)
 (def bold-weight 700)
+
+; File locations
+(def curve-webm "../video/curve.webm")
+(def curve-mp4 "../video/curve.mp4")
+(def rainbow-webm "../video/flat-rainbow.webm")
+(def rainbow-mp4 "../video/flat-rainbow.mp4")
+(def face "images/david.jpeg")
+(def cv "files/davidjlee_resume.pdf")
+(def poster "files/davidjlee_poster.pdf")
 
 (defn link
   [{url   :url
@@ -94,8 +104,8 @@
                               :max-height "400px"
                               :max-width  "400px"
                               :padding    0}}
-     [:source {:src "../images/gifs/curve.webm" :type "video/webm"}]
-     [:source {:src "../images/gifs/curve.mp4" :type "video/mp4"}]]
+     [:source {:src curve-webm :type "video/webm"}]
+     [:source {:src curve-mp4 :type "video/mp4"}]]
     [:p {:style {:color "gray"}}
      "An early demo showcasing different stroke thicknesses and colors."]]
    [:div.video-wrapper {:style {:margin    "1rem"
@@ -104,8 +114,8 @@
                               :max-height "400px"
                               :max-width  "400px"
                               :padding    0}}
-     [:source {:src "../images/gifs/flat-rainbow.webm" :type "video/webm"}]
-     [:source {:src "../images/gifs/flat-rainbow.mp4" :type "video/mp4"}]]
+     [:source {:src rainbow-webm :type "video/webm"}]
+     [:source {:src rainbow-mp4 :type "video/mp4"}]]
     [:p {:style {:color "gray"}}
      "A later demo showcasing a new brush type (flat) and color type (rainbow)."]]])
 
@@ -131,7 +141,7 @@
                         {:margin-bottom "1.5rem"}
                         {:margin-left "1.5rem"
                          :float       "right"}))}
-       [:img {:src   "images/david.jpeg"
+       [:img {:src   face
               :alt   "David J. Lee"
               :style {:border-radius "50%"
                       :height        240
@@ -148,7 +158,7 @@
 
       [section {:header ""}
        [styled-list {:font-size "150%"}
-        [:li [link {:url "files/davidjlee_resume.pdf"} "CV"]]
+        [:li [link {:url cv} "CV"]]
         [:li [link {:url "https://github.com/djslzx"} "GitHub"]]
         [:li [link {:url "mailto:David.J.Lee@williams.edu"} "Email"]]]]
 
@@ -161,14 +171,14 @@
                   :description [:p
                                 "Designed and implemented a novel adaptive quotient filter from scratch in C."]}]
         [project {:title       [:span "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
-                                " " [link {:url "files/davidjlee_poster.pdf"} "[Poster]"]]
+                                " " [link {:url poster} "[Poster]"]]
                   :year        "Summer 2019"
                   :by          [:span "Worked with " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} "Prof. Stephen Freund"]
                                 " as part of " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]
                   :description [:p
                                 "Developed and implemented an algorithm to automatically infer synchronization disciplines
                                  for concurrent programs.  For an explanation of synchronization disciplines, see "
-                                [link {:url "files/davidjlee_poster.pdf"} "my poster"] " or "
+                                [link {:url poster} "my poster"] " or "
                                 [link {:url "http://plv.colorado.edu/dmoon/assets/docs/thesis.pdf"} "this thesis"] " (Moon, 2016)."]}]
         [project {:title       [:span "Knot Theory Research"]
                   :year        "Spring 2019"
