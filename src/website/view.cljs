@@ -16,10 +16,10 @@
 (def bold-weight 700)
 
 ; File locations
-(def curve-webm "../video/curve.webm")
-(def curve-mp4 "../video/curve.mp4")
-(def rainbow-webm "../video/flat-rainbow.webm")
-(def rainbow-mp4 "../video/flat-rainbow.mp4")
+(def curve-webm "videos/curve.webm")
+(def curve-mp4 "videos/curve.mp4")
+(def rainbow-webm "videos/flat-rainbow.webm")
+(def rainbow-mp4 "videos/flat-rainbow.mp4")
 (def face "images/david.jpeg")
 (def cv "files/davidjlee_resume.pdf")
 (def poster "files/davidjlee_poster.pdf")
