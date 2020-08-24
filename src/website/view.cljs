@@ -190,7 +190,7 @@
         [project {:title       [:span "A Peer-to-Peer Privacy-Preserving Location-Based Digital Contact Tracing Protocol"
                                 " " [link {:url "https://github.com/shvmsptl/footprint"} "[GitHub]"]]
                   :year        "2020"
-                  :description [:p "Designed a protocol that uses GPS data from cellular
+                  :description [:p "Designed a digital contact tracing protocol that uses GPS data from cellular
                                    devices to alert users of potential virus transmission events without compromising user anonymity.
                                    Simulated in Go using Apache Cassandra. Nominated for the 2020 Ward Prize, an annual prize
                                    awarded to the best student project in the Williams College CS Department."]}]
@@ -205,7 +205,7 @@
         [project {:title       [:span "Hearthstone in Lisp"]
                   :year        "2019"
                   :description [:p "Rewrote the Hearthstone game engine in Clojure following functional programming best practices.
-                                The core engine consists entirely of pure functions that are rigorously tested --
+                                The engine core consists entirely of pure functions that are rigorously tested —
                                 mutation is limited to the namespace handling the engine's interface with a web view."]}]
         [project {:title       [:span "Pod Rank & Search"
                                 " " [link {:url "https://github.com/djslzx/housing"} "[GitHub]"]]
