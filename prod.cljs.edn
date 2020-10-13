@@ -1,1 +1,2 @@
-{:main website.core}
+{:main website.core
+ :output-to "docs/prod-main.js"}

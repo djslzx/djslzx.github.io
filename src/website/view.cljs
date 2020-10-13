@@ -153,7 +153,7 @@
 
       [section {:style {:padding "1rem auto"}}
        [:p {:style {:font-size "150%"}}
-        "I'm a senior computer science & math major at Williams College."
+        "I'm a senior computer science & math major at Williams College. "
         "I'm interested in functional programming (particularly Lisps), data structures (primarily filters), and machine learning."]]
 
       [section {:header ""}
