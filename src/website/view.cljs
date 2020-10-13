@@ -21,8 +21,8 @@
 (def rainbow-webm "videos/flat-rainbow.webm")
 (def rainbow-mp4 "videos/flat-rainbow.mp4")
 (def face "images/david.jpeg")
-(def cv "files/davidjlee_resume.pdf")
-(def poster "files/davidjlee_poster.pdf")
+(def cv "files/davidjlee_cv.pdf")
+(def poster "files/synchronicity19.pdf")
 
 (defn link
   [{url   :url
@@ -153,7 +153,7 @@
 
       [section {:style {:padding "1rem auto"}}
        [:p {:style {:font-size "150%"}}
-        "I'm a senior computer science & math major at " [link {:url "https://www.williams.edu"} "Williams College"] ". "
+        "I'm a senior computer science & math major at Williams College."
         "I'm interested in functional programming (particularly Lisps), data structures (primarily filters), and machine learning."]]
 
       [section {:header ""}
