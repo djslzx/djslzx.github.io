@@ -1,4 +1,6 @@
-(ns website.view)
+(ns website.view
+  (:require [clojure.string :as str]
+            [reagent.core :as reagent]))
 
 ; Colors
 (def dark-color "#333232")
@@ -64,23 +66,28 @@
     by    :by
     desc  :description}]
   [:div.project {:style {:padding-bottom "1rem"}}
-   [:h3 {:style {:margin      "0 0 1.5rem 0"
+   [:h3 {:style {:margin      "0"
                  :font-size   "1.5rem"
                  :font-weight medium-weight}}
-    title
-    (if (some? year)
-      [:span " " [:span {:style {:font-weight regular-weight}}
-                  "(" year ")"]])]
-   (if (some? by) [:div.by-line by])
+    title]
+   (if (some? year)
+     [:h4 {:style {:margin-top  "0.5rem"
+                   :font-size   "1.25rem"
+                   :font-weight regular-weight
+                   :color       "gray"}}
+      year])
+   (if (some? by)
+     [:div.by-line {:style {}}
+      by])
    [:div.description desc]])
 
 (defn section
   [{:keys [style header]} & children]
-  [:div.section {:style (merge {:margin "2.5rem 0"}
+  [:div.section {:style (merge {:margin "2rem 0 1rem"}
                                style)}
-   [:h2 {:style {:font-weight medium-weight
-                 :font-size   "1.25rem"}}
-    header]
+   (if (some? header)
+     [:h2 {:style {:font-weight medium-weight}}
+      header])
    [:div {:style {}} children]])
 
 (defn auto-play-video
@@ -91,6 +98,19 @@
                   :playsInline "true"
                   :loop        "true"})
    sources])
+
+(defn hidden-txt
+  [off-txt on-txt & hidden-txt]
+  (let [hidden? (reagent/atom true)]
+    (fn []
+      [:span
+       [:a {:on-click #(swap! hidden? not)}
+        (if @hidden?
+          off-txt
+          on-txt)]
+       " "
+       (if-not (deref hidden?)
+         hidden-txt)])))
 
 (defn ar-demo []
   [:div.ar-demo {:style {:margin          "1rem 0"
@@ -142,7 +162,7 @@
                         {:margin-left "1.5rem"
                          :float       "right"}))}
        [:img {:src   face
-              :alt   "David J. Lee"
+              :alt   "My face"
               :style {:border-radius "50%"
                       :height        240
                       :width         240}}]]
@@ -152,9 +172,17 @@
        "David J. Lee"]
 
       [section {:style {:padding "1rem auto"}}
-       [:p {:style {:font-size "150%"}}
-        "I'm a senior computer science & math major at Williams College. "
-        "I'm interested in functional programming (particularly Lisps), data structures (primarily filters), and machine learning."]]
+       [:div
+        [:p {:style {:font-size "150%"}}
+         "I'm a fourth year undergraduate computer science & math major at " [link {:url "https://www.williams.edu/"} "Williams College"] ". "
+         "I'm interested in programming languages, data structures, and machine learning."]
+        [:p
+         "My research experience consists of projects in concurrent program analysis and probabilistic data structures. "
+         "I am currently working on adaptive filters for my undergraduate thesis."]
+
+        [:p {:style {:color     "gray"
+                     :font-size "100%"}}
+         "Last updated: 28 Dec 2020"]]]
 
       [section {:header ""}
        [styled-list {:font-size "150%"}
@@ -164,61 +192,96 @@
 
       [section {:header "Research"}
        [simple-list
-        [project {:title       "A Practical Adaptive Quotient Filter"
-                  :year        "Summer 2020"
-                  :by          [:span "Worked with Profs. " [link {:url "http://www.shikhas.com/"} "Shikha Singh"]
+        [project {:title       [:span "A Practical Adaptive Quotient Filter" " " [:span {:style {:font-weight "normal"}} "(Senior Thesis)"]]
+                  :year        "Summer 2020–Present"
+                  :by          [:span "Advised by Profs. " [link {:url "http://www.shikhas.com/"} "Shikha Singh"]
                                 " and " [link {:url "http://mccauleysam.com/"} "Sam McCauley"] "."]
-                  :description [:p
-                                "Designed and implemented a novel adaptive quotient filter from scratch in C."]}]
+                  :description [:div
+                                [:p "I'm currently working on building a novel adaptive quotient filter. "
+                                 [hidden-txt
+                                  [:span {:style {:color "gray"}} "Read more"]
+                                  [:span {:style {:color "gray"}} "See less"]
+                                  [:div {:style {:border  "2px solid lightgray"
+                                                 :margin  "1rem"
+                                                 :padding "1rem 2.25rem"}}
+                                   [:h3 "What is a filter?"]
+                                   [:p "A filter is a lossy set representation with a bounded and one-sided error rate. "
+                                    "Because it is lossy, a filter is compact. It can therefore fit higher in the memory hierarchy than "
+                                    "a lossless set representation, benefiting from faster queries. "
+                                    "Because its error is bounded and one-sided (no false negatives), a filter can be queried "
+                                    "before a lossless set to save time on queries by  \"filtering out\" most negative queries. "
+                                    "A filter is useful insofar as it is small (to speed up queries by fitting in smaller caches) and accurate (to cut out more negative queries)."]
+                                   [:h3 "What makes a filter adaptive?"]
+                                   [:p "Conventional filters are static: they do not correct the false positives they report. "
+                                    "If a static filter reports a false positive for an element x, all subsequent queries on x will also yield false positives, driving the filter's error rate to 1. "
+                                    "Therefore, a static filter's error rate holds for single queries but not for sequences of queries. "]
+                                   [:p "In contrast, an adaptive filter's error rate holds for (bounded) sequences of queries. "
+                                    "Adaptive filters remember and fix past false positives, significantly outperforming static filters against adversaries or on queries following a Zipfian distribution - a feature of much real-world data. "
+                                    "In general, adaptive filters are useful for data that contains repetitions. "]
+                                   [:h3 "My Work"]
+                                   [:p "Designing an adaptive filter entails coming up with clever mechanisms to compactly remember past errors. "
+                                    "I've been working with my advisors to develop an adaptive quotient filter that effectively remembers and fixes "
+                                    "past errors while maintaining high throughput."]]]
+                                 ]]}]
         [project {:title       [:span "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
                                 " " [link {:url poster} "[Poster]"]]
                   :year        "Summer 2019"
-                  :by          [:span "Worked with " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} "Prof. Stephen Freund"]
-                                " as part of " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]
+                  :by          [:span "With " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} "Prof. Stephen Freund"]
+                                " for " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]
                   :description [:p
-                                "Developed and implemented an algorithm to automatically infer synchronization disciplines
+                                "I developed and implemented an algorithm to automatically infer synchronization disciplines
                                  for concurrent programs.  For an explanation of synchronization disciplines, see "
                                 [link {:url poster} "my poster"] " or "
                                 [link {:url "http://plv.colorado.edu/dmoon/assets/docs/thesis.pdf"} "this thesis"] " (Moon, 2016)."]}]
         [project {:title       [:span "Knot Theory Research"]
                   :year        "Spring 2019"
-                  :description [:p "Wrote a combinatorial algorithm in Python to conjecture an upper bound
+                  :description [:p "I wrote a combinatorial algorithm in Python to conjecture an upper bound
                                     on the number of distinct virtual multi-crossings for a virtual n-crossing, ignoring symmetries."]}]]]
 
       [section {:header "Projects"}
        [simple-list
-        [project {:title       [:span "A Peer-to-Peer Privacy-Preserving Location-Based Digital Contact Tracing Protocol"
+        [project {:title       [:span "Learned Bloom Filters"
+                                " " [link {:url "https://github.com/djslzx/learned-filters"} "[GitHub]"]]
+                  :year        "Fall 2020"
+                  :description [:p "Implemented learning-augmented Bloom filters in Python using PyTorch, "
+                                "working off of two papers: "
+                                [link {:url "https://arxiv.org/abs/1712.01208"} "[Kraska 2018]"]
+                                " & "
+                                [link {:url "https://papers.nips.cc/paper/2018/file/0f49c89d1e7298bb9930789c8ed59d48-Paper.pdf"} "[Mitzenmacher 2018]"]
+                                "."]}]
+        [project {:title       [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol"
                                 " " [link {:url "https://github.com/shvmsptl/footprint"} "[GitHub]"]]
-                  :year        "2020"
-                  :description [:p "Designed a digital contact tracing protocol that uses GPS data from cellular
+                  :year        "Spring 2020"
+                  :description [:p "Designed a peer-to-peer digital contact tracing protocol that uses GPS data from cellular
                                    devices to alert users of potential virus transmission events without compromising user anonymity.
                                    Simulated in Go using Apache Cassandra. Nominated for the 2020 Ward Prize, an annual prize
                                    awarded to the best student project in the Williams College CS Department."]}]
         [project {:title       [:span
                                 "Augmented-Reality Drawing for iOS"
                                 " " [link {:url "https://github.com/djslzx/ar-drawing"} "[GitHub]"]]
-                  :year        "2018"
+                  :year        "Fall 2018"
                   :description [:p "Wrote an iOS application that lets users draw curves in 3D space by moving their devices.
                                     I used ARKit to determine device position from camera data and SceneKit to generate 3D geometries.
                                     I also learned some basic computer graphics (curve smoothing and quaternion rotation)."
                                 [ar-demo]]}]
         [project {:title       [:span "Hearthstone in Lisp"]
-                  :year        "2019"
+                  :year        "Fall 2019"
                   :description [:p "Rewrote the Hearthstone game engine in Clojure following functional programming best practices.
                                 The engine core consists entirely of pure functions that are rigorously tested —
                                 mutation is limited to the namespace handling the engine's interface with a web view."]}]
-        [project {:title       [:span "Pod Rank & Search"
-                                " " [link {:url "https://github.com/djslzx/housing"} "[GitHub]"]]
-                  :year        "2020"
-                  :description [:span
-                                [:p "Williams College instituted a new housing system for the 2020-21 academic year,
-                                   in light of the COVID-19 pandemic.
-                                   Under the new guidelines, dorm rooms are grouped into \"pods\" of 2 to 12 rooms: students in a pod are allowed to
-                                   interact with each other without observing social distancing, like a family unit. "]
-                                [:p "I wrote some scripts in Clojure to parse data about dorm rooms
-                                    (e.g. room size, window facing direction), new data about pod groupings,
-                                    and real-time data on the availability of individual rooms to provide
-                                    listings of available pods, ordered by user preference."]]}]]]]
+        ;[project {:title       [:span "Pod Rank & Search"
+        ;                        " " [link {:url "https://github.com/djslzx/housing"} "[GitHub]"]]
+        ;          :year        "2020"
+        ;          :description [:span
+        ;                        [:p "Williams College instituted a new housing system for the 2020-21 academic year,
+        ;                           in light of the COVID-19 pandemic.
+        ;                           Under the new guidelines, dorm rooms are grouped into \"pods\" of 2 to 12 rooms: students in a pod are allowed to
+        ;                           interact with each other without observing social distancing, like a family unit. "]
+        ;                        [:p "I wrote some scripts in Clojure to parse data about dorm rooms
+        ;                            (e.g. room size, window facing direction), new data about pod groupings,
+        ;                            and real-time data on the availability of individual rooms to provide
+        ;                            listings of available pods, ordered by user preference."]]}]
+        ]]]
 
      [:div.footer {:style {:text-align       "center"
                            :padding          "2rem 0"
