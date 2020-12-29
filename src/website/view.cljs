@@ -68,7 +68,8 @@
   [:div.project {:style {:padding-bottom "1rem"}}
    [:h3 {:style {:margin      "0"
                  :font-size   "1.5rem"
-                 :font-weight medium-weight}}
+                 :font-weight regular-weight
+                 }}
     title]
    (if (some? year)
      [:h4 {:style {:margin-top  "0.5rem"
@@ -81,14 +82,22 @@
       by])
    [:div.description desc]])
 
+(defn line
+  ([thickness color]
+   [line thickness color {}])
+  ([thickness color style]
+   [:div {:style (merge style {:padding-bottom 10
+                               :border-top     (str thickness " solid " color)})}]))
+
 (defn section
-  [{:keys [style header]} & children]
-  [:div.section {:style (merge {:margin "2rem 0 1rem"}
-                               style)}
-   (if (some? header)
-     [:h2 {:style {:font-weight medium-weight}}
-      header])
-   [:div {:style {}} children]])
+  [m & children]
+  (let [{header :header} m]
+    [:div.section m
+     (if (some? header)
+       [:div [:h2 {:style {:font-weight medium-weight}}
+              header]
+        [line "1px" light-color]])
+     [:div children]]))
 
 (defn auto-play-video
   [m & sources]
@@ -171,57 +180,55 @@
                                :font-weight medium-weight}}
        "David J. Lee"]
 
-      [section {:style {:padding "1rem auto"}}
+      [section {:style {:padding-bottom "1rem"}}
        [:div
-        [:p {:style {:font-size "150%"}}
+        [:p {:style {:font-size "1.5rem"}}
          "I'm a fourth year undergraduate computer science & math major at " [link {:url "https://www.williams.edu/"} "Williams College"] ". "
          "I'm interested in programming languages, data structures, and machine learning."]
-        [:p
-         "My research experience consists of projects in concurrent program analysis and probabilistic data structures. "
-         "I am currently working on adaptive filters for my undergraduate thesis."]
-
+        [:p {:style {:font-size "1.2rem"}}
+         "My research experience is in concurrent program analysis and probabilistic data structures. "
+         "I am currently working on developing adaptive filters for my undergraduate thesis. "]
         [:p {:style {:color     "gray"
                      :font-size "100%"}}
-         "Last updated: 28 Dec 2020"]]]
-
-      [section {:header ""}
-       [styled-list {:font-size "150%"}
-        [:li [link {:url cv} "CV"]]
-        [:li [link {:url "https://github.com/djslzx"} "GitHub"]]
-        [:li [link {:url "mailto:David.J.Lee@williams.edu"} "Email"]]]]
+         "Last updated: 29 Dec 2020"]]
+       [:div
+        [styled-list {:font-size "150%"}
+         [:li [link {:url cv} "CV"]]
+         [:li [link {:url "https://github.com/djslzx"} "GitHub"]]
+         [:li [link {:url "mailto:djl5@williams.edu"} "Email"]]]]]
 
       [section {:header "Research"}
        [simple-list
         [project {:title       [:span "A Practical Adaptive Quotient Filter" " " [:span {:style {:font-weight "normal"}} "(Senior Thesis)"]]
                   :year        "Summer 2020–Present"
-                  :by          [:span "Advised by Profs. " [link {:url "http://www.shikhas.com/"} "Shikha Singh"]
+                  :by          [:span "Advised by Profs. " [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
                                 " and " [link {:url "http://mccauleysam.com/"} "Sam McCauley"] "."]
                   :description [:div
                                 [:p "I'm currently working on building a novel adaptive quotient filter. "
                                  [hidden-txt
                                   [:span {:style {:color "gray"}} "Read more"]
                                   [:span {:style {:color "gray"}} "See less"]
-                                  [:div {:style {:border  "2px solid lightgray"
-                                                 :margin  "1rem"
-                                                 :padding "1rem 2.25rem"}}
-                                   [:h3 "What is a filter?"]
+                                  [:div {:style {:margin "1rem"}}
+                                   [line "1px" light-color {:margin "2rem 0 1rem"}]
+                                   [:h3 {:style {:font-weight medium-weight}} "What is a filter?"]
                                    [:p "A filter is a lossy set representation with a bounded and one-sided error rate. "
                                     "Because it is lossy, a filter is compact. It can therefore fit higher in the memory hierarchy than "
                                     "a lossless set representation, benefiting from faster queries. "
                                     "Because its error is bounded and one-sided (no false negatives), a filter can be queried "
                                     "before a lossless set to save time on queries by  \"filtering out\" most negative queries. "
                                     "A filter is useful insofar as it is small (to speed up queries by fitting in smaller caches) and accurate (to cut out more negative queries)."]
-                                   [:h3 "What makes a filter adaptive?"]
+                                   [:h3 {:style {:font-weight medium-weight}} "What makes a filter adaptive?"]
                                    [:p "Conventional filters are static: they do not correct the false positives they report. "
                                     "If a static filter reports a false positive for an element x, all subsequent queries on x will also yield false positives, driving the filter's error rate to 1. "
                                     "Therefore, a static filter's error rate holds for single queries but not for sequences of queries. "]
                                    [:p "In contrast, an adaptive filter's error rate holds for (bounded) sequences of queries. "
                                     "Adaptive filters remember and fix past false positives, significantly outperforming static filters against adversaries or on queries following a Zipfian distribution - a feature of much real-world data. "
                                     "In general, adaptive filters are useful for data that contains repetitions. "]
-                                   [:h3 "My Work"]
+                                   [:h3 {:style {:font-weight medium-weight}} "My Work"]
                                    [:p "Designing an adaptive filter entails coming up with clever mechanisms to compactly remember past errors. "
                                     "I've been working with my advisors to develop an adaptive quotient filter that effectively remembers and fixes "
-                                    "past errors while maintaining high throughput."]]]
+                                    "past errors while maintaining high throughput."]
+                                   [line "1px" light-color {:margin "2rem 0 1rem"}]]]
                                  ]]}]
         [project {:title       [:span "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
                                 " " [link {:url poster} "[Poster]"]]
@@ -256,6 +263,11 @@
                                    devices to alert users of potential virus transmission events without compromising user anonymity.
                                    Simulated in Go using Apache Cassandra. Nominated for the 2020 Ward Prize, an annual prize
                                    awarded to the best student project in the Williams College CS Department."]}]
+        [project {:title       [:span "Hearthstone in Lisp"]
+                  :year        "Fall 2019"
+                  :description [:p "Rewrote the Hearthstone game engine in Clojure following functional programming best practices.
+                                The engine core consists entirely of pure functions that are rigorously tested —
+                                mutation is limited to the namespace handling the engine's interface with a web view."]}]
         [project {:title       [:span
                                 "Augmented-Reality Drawing for iOS"
                                 " " [link {:url "https://github.com/djslzx/ar-drawing"} "[GitHub]"]]
@@ -264,11 +276,6 @@
                                     I used ARKit to determine device position from camera data and SceneKit to generate 3D geometries.
                                     I also learned some basic computer graphics (curve smoothing and quaternion rotation)."
                                 [ar-demo]]}]
-        [project {:title       [:span "Hearthstone in Lisp"]
-                  :year        "Fall 2019"
-                  :description [:p "Rewrote the Hearthstone game engine in Clojure following functional programming best practices.
-                                The engine core consists entirely of pure functions that are rigorously tested —
-                                mutation is limited to the namespace handling the engine's interface with a web view."]}]
         ;[project {:title       [:span "Pod Rank & Search"
         ;                        " " [link {:url "https://github.com/djslzx/housing"} "[GitHub]"]]
         ;          :year        "2020"
@@ -286,7 +293,7 @@
      [:div.footer {:style {:text-align       "center"
                            :padding          "2rem 0"
                            :width            "100%"
-                           :font-size        "small"
+                           :font-size        "smaller"
                            :color            light-color
                            :background-color dark-color}}
       "© 2020 David J. Lee. "
