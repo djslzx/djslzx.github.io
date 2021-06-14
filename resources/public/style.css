@@ -1,13 +1,42 @@
+:root {
+  font-size: 120%;
+  /*hyphens: auto;*/
+}
+
+.site_title {
+  font-family: Jost, sans serif;
+  font-size: 150%;
+  font-weight: 400;
+}
+
+.section_header {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 400;
+}
+
 body {
   margin: 0;
-  font-family: "IBM Plex Sans", Helvetica, Arial, sans serif;
+  font-family: Newsreader, serif;
+  line-height: 1.45;
+}
+
+h1, h2, h3 {
+  font-family: Jost, sans serif;
+  font-size: 1rem;
 }
 
 a {
   color: inherit;
-  text-decoration: lightgray underline;
+  font-family: Jost, sans serif;
+  text-transform: uppercase;
+  /*font-variant: all-petite-caps;*/
+  font-size: 85%;
+  letter-spacing: 0.08em;
+  text-decoration: #dfe5e9 underline;
 }
 
 a:hover {
   text-decoration: inherit;
+  background-color: #dfe5e9;
 }
