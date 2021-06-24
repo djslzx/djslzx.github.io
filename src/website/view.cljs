@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [reagent.core :as reagent]))
 
-(def last-updated "14 June 2021")
+(def last-updated "June 2021")
 
 ; Colors
 (def dark-color "#333232")
@@ -20,6 +20,10 @@
 (def medium-weight 500)
 (def semi-bold-weight 600)
 (def bold-weight 700)
+
+; Font families
+(def serif "Newsreader")
+(def sans "Jost")
 
 ; File locations
 (def curve-webm "videos/curve.webm")
@@ -41,6 +45,24 @@
        :rel    "noopener noreferrer"}
    children])
 
+(def small-caps
+  {:font-family    sans
+   :text-transform "uppercase"
+   :letter-spacing "0.08em"
+   :font-size      "85%"})
+
+(defn name-emph [x]
+  [:span {:style {:text-decoration "#dfe5e9 underline"}}
+   x])
+
+(defn fserif [x] 
+  [:span {:style {:font-family serif}}
+   x])
+
+(defn fsans [x] 
+  [:span {:style {:font-family sans}}
+   x])
+
 (defn simple-list
   [styles & items]
   [:ul {:style (merge styles
@@ -60,26 +82,60 @@
      [:div children]]))
 
 (defn paper
-  [title & rest]
+  [title authors & rest]
   [:div.paper {:style {:margin-bottom "1rem"}}
-   [:span {:style {:font-weight 500
-                   :font-family "Jost"}}
+   [:div {:style {:font-weight medium-weight
+                  :font-family sans}}
     title]
-   ". "
-   [:span rest]])
+   [:div {:style {:margin "0 "}}
+    authors]
+   [:div {:style {:font-weight regular-weight}} 
+    rest]])
 
 (defn project
   [{title :title
     by    :by
     desc  :desc}]
   [:div.project {:style {:margin-bottom "1.5rem"}}
-   [:h2 {:style {:margin      "0"
-                 :font-weight medium-weight}}
+   [:h3 {:style {:margin 0}}
     title]
    (if (some? by)
      [:div.by-line {:style {}}
       by])
    [:div.description desc]])
+
+(defn course
+  [title sems]
+  [:div {:style {}}
+   [:span
+    [:span {:style {:margin 0
+                    :float  "left"}}
+     title]
+    " "
+    [:span {:style {:font-size   "90%"
+                    :font-family sans
+                    :color       light-gray
+                    :float       "right"}}
+     sems]]
+   [:div {:style {:clear "both"}}]])
+
+(defn award
+  [title year desc]
+  [:div {:style {:margin-bottom "1rem"}}
+   [:span
+    [:span {:style {:font-family sans
+                    :font-weight 500}}
+     title]
+    ", "
+    [:span {:style {:font-family sans
+                    :font-size   "90%"}}
+     year
+     ]
+    ". "
+    (if (not-empty desc)
+      [:span {:style {}}
+       desc ". "])
+    ]])
 
 (defn line
   ([thickness color]
@@ -160,17 +216,17 @@
       [section {:style {:margin-top 0}}
        [:div
         [:p {:style {:font-size "110%"}}
-         "I'm an incoming PhD student in computer science at Cornell University. "
+         "I'm an incoming Ph.D. student in computer science at Cornell University. "
          "I'm interested in programming languages, data structures, and machine learning."]
         [:p
-         "Prior to Cornell, I was an undergrad at Williams College, where I wrote a thesis on
-          filters advised by "
+         "Prior to Cornell, I was an undergrad at Williams College, "
+         "where I wrote a thesis on filters advised by "
          [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
          " and "
          [link {:url "http://mccauleysam.com/"} "Sam McCauley"]
          "."]]
        [:div
-        [simple-list {:font-family "Jost"}
+        [simple-list {:font-family sans}
          [link {:url cv} "CV"]
          [link {:url "https://github.com/djslzx"} "GitHub"]
          [link {:url "mailto:djslzx@gmail.com"} "Email"]]]]
@@ -178,23 +234,28 @@
       [section {:header "Research"}
        [simple-list {}
         [paper
-         "Telescoping Adaptive Filter: A Practical Adaptive Filter"
-         [:span [:span {:style {:font-style "italic"}} "David Lee"] ", Samuel McCauley, Shikha Singh, Max Stein. In Submission. "]]
+         "Telescoping Filter: A Practical Adaptive Filter"
+         [:span [name-emph "David J. Lee"] ", Samuel McCauley, Shikha Singh, and Max Stein."]
+         [:span "European Symposium on Algorithms (" 
+          [:span {:style small-caps} 
+           "ESA"] 
+          "), 2021." ]]
         [paper
          "A Practical Adaptive Quotient Filter"
          [:span
-          [:span {:style {:font-style "italic"}} "David J. Lee"] ". Senior thesis, 2021. "
+          [name-emph "David J. Lee"] ". Senior thesis, 2021. "
           "Advised by " [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
           " and " [link {:url "http://mccauleysam.com/"} "Sam McCauley"] "."]]
         [paper
          [:span "Virtual Multicrossings and Petal Diagrams for Virtual Knots and Links " [link {:url "https://arxiv.org/abs/2103.08314"} "(Arxiv)"]]
-         "Colin Adams, Chaim Even-Zohar, Jonah Greenberg, Reuben Kaufman, "
-         [:span {:style {:font-style "italic"}} "David Lee"]
-         ", Darin Li, Dustin Ping, Theodore Sandstrom, Xiwen Wang. In Submission. "]
+         [:span 
+          "Colin Adams, Chaim Even-Zohar, Jonah Greenberg, Reuben Kaufman, "
+          [name-emph "David Lee"]
+          ", Darin Li, Dustin Ping, Theodore Sandstrom, and Xiwen Wang. In Submission."]]
         [paper
          "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
          [:span
-          "Margaret Allen, " [:span {:style {:font-style "italic"}} "David J. Lee"] ". "
+          "Margaret Allen, " [name-emph "David J. Lee"] ". "
           [link {:url poster} "Poster"] ", 2019. "
           "With " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
           " for " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]]]]
@@ -206,10 +267,10 @@
                   :year  "Fall 2020"
                   :desc  [:p "I implemented learning-augmented Bloom filters in Python using PyTorch, "
                           "working off of two papers ["
-                          [link {:url   "https://arxiv.org/abs/1712.01208"} "1"]
+                          [link {:url "https://arxiv.org/abs/1712.01208"} "1"]
                           ", "
-                          [link {:url   "https://papers.nips.cc/paper/2018/file/0f49c89d1e7298bb9930789c8ed59d48-Paper.pdf"} "2"]
-                          "]. The first learned filter (Kraska et al.’s) uses a single Bloom filter; the second (Mitzenmacher’s) uses two. "
+                          [link {:url "https://papers.nips.cc/paper/2018/file/0f49c89d1e7298bb9930789c8ed59d48-Paper.pdf"} "2"]
+                          "]. "
                           "Nominated for the 2021 Ward Prize, an annual prize awarded to the best student project in the Williams College CS Department."]}]
         [project {:title [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol"
                           " " [link {:url "https://github.com/shvmsptl/footprint"} "(GitHub)"]]
@@ -230,9 +291,26 @@
                           [:p "I wrote an iOS application that lets users draw 3D curves by moving their devices.
                                Built using ARKit (to determine device position from camera feed) and SceneKit (to generate 3D geometries)."]
                           [ar-demo]]}]
-        ]]]
+        ]]
+      (comment 
+        [section {:header "Teaching"}
+         [:div [:h3 "Williams College (Teaching Assistant)"]
+          [simple-list {}
+           [course "Principles of Programming Languages" "S21, F20, F19, S19"]
+           [course "Software Methods" "S20"]
+           [course "Intro to Computer Science" "F18"]
+           [course "Data Structures" "S18"]]]])
+      (comment
+        [section {:header "Academic Honors"}
+         [simple-list {}
+          [award "Sam Goldberg Colloquium Prize in Computer Science" 2021
+           "Awarded for the best student colloquium in computer science at Williams College"]
+          [award "Sigma Xi" 2021 ""]
+          [award "Phi Beta Kappa (Junior Year)" 2020 "Awarded to top 5% of graduating class by GPA"]
+          ]])]
 
      [:div.footer {:style {:text-align       "center"
+                           :margin-top       "3rem"
                            :padding          "1rem 0"
                            :width            "100%"
                            :font-size        "0.75rem"
