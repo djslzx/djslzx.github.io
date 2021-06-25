@@ -97,7 +97,8 @@
     by    :by
     desc  :desc}]
   [:div.project {:style {:margin-bottom "1.5rem"}}
-   [:h3 {:style {:margin 0}}
+   [:h3 {:style {:margin 0
+                 :font-weight medium-weight}}
     title]
    (if (some? by)
      [:div.by-line {:style {}}
@@ -124,7 +125,7 @@
   [:div {:style {:margin-bottom "1rem"}}
    [:span
     [:span {:style {:font-family sans
-                    :font-weight 500}}
+                    :font-weight medium-weight}}
      title]
     ", "
     [:span {:style {:font-family sans
@@ -185,31 +186,34 @@
 (defn app
   [{{width  :width
      height :height} :size}]
-  (let [small-screen? (< width 600)]
+  (let [small-screen? (< width 720)]
     [:div.layout {:style {:display          "flex"
                           :flex-direction   "column"
                           :min-height       "100vh"
                           :color            text-color
                           :background-color bkg-color}}
+     (if-not small-screen? 
+       [:div {:style {:height "20px"
+                      :background-color "white"}}])
      [:div.main {:style {:box-sizing "border-box"
                          :max-width  720
                          :margin     "0 auto"
                          :padding    "0 1rem"
                          :flex       "1 1"}}
-
-      [:div.pic
-       {:style (merge {:text-align "center"
-                       :margin     "1rem"}
-                      (if small-screen?
-                        {:margin-bottom "1.5rem"}
-                        {:margin-left "1.5rem"
-                         :float       "right"}))}
-       ;[:img {:src   face
-       ;       :alt   "My face"
-       ;       :style {:border-radius "50%"
-       ;               :height        240
-       ;               :width         240}}]
-       ]
+      (comment 
+        [:div.pic
+         {:style (merge {:text-align "center"
+                         :margin     "1rem"}
+                        (if small-screen?
+                          {:margin-bottom "1.5rem"}
+                          {:margin-left "1.5rem"
+                           :float       "right"}))}
+         [:img {:src   face
+                :alt   "My face"
+                :style {:border-radius "50%"
+                        :height        240
+                        :width         240}}]
+         ])
 
       [:h1.site_title "David J. Lee"]
 
