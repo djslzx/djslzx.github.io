@@ -28,15 +28,10 @@ h1, h2, h3 {
 
 a {
   color: inherit;
-  font-family: Jost, sans serif;
-  text-transform: uppercase;
-  /*font-variant: all-petite-caps;*/
-  font-size: 85%;
-  letter-spacing: 0.08em;
   text-decoration: #dfe5e9 underline;
 }
 
 a:hover {
   text-decoration: inherit;
-  background-color: #dfe5e9;
+  background-color: #e9eef2;
 }

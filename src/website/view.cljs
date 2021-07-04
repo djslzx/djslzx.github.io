@@ -2,17 +2,15 @@
   (:require [clojure.string :as str]
             [reagent.core :as reagent]))
 
-(def last-updated "June 2021")
+(def last-updated "July 2021")
 
 ; Colors
-(def dark-color "#333232")
-(def light-color "#B7B7B7")
-(def very-light-color "#f1f2f3")
+(def bkg-color "white")
+(def text-color "#333232")
+(def highlight-color "#e9eef2")
+(def underline-color "#dfe5e9")
 (def dark-gray "#494c4d")
 (def light-gray "#8d9599")
-
-(def bkg-color "white")
-(def text-color dark-color)
 
 ; Font weights
 (def light-weight 300)
@@ -23,7 +21,7 @@
 
 ; Font families
 (def serif "Newsreader")
-(def sans "Jost")
+(def sans "Jost, sans serif")
 
 ; File locations
 (def curve-webm "videos/curve.webm")
@@ -33,12 +31,19 @@
 (def face "images/david.jpeg")
 (def cv "files/davidjlee_cv.pdf")
 (def poster "files/synchronicity19.pdf")
+(def thesis "files/thesis.pdf")
 
 (defn link
   [{url   :url
     style :style
     class :class} & children]
-  [:a {:style  (merge {:font-weight "normal"} style)
+  [:a {:style (if-not style 
+                {:font-family sans
+                 :font-size "85%"
+                 :font-weight regular-weight
+                 :text-transform "uppercase"
+                 :letter-spacing "0.08em"}
+                style)
        :href   url
        :class  class
        :target "_blank"
@@ -52,7 +57,7 @@
    :font-size      "85%"})
 
 (defn name-emph [x]
-  [:span {:style {:text-decoration "#dfe5e9 underline"}}
+  [:span {:style {}}
    x])
 
 (defn fserif [x] 
@@ -221,10 +226,12 @@
        [:div
         [:p {:style {:font-size "110%"}}
          "I'm an incoming Ph.D. student in computer science at Cornell University. "
-         "I'm interested in programming languages, data structures, and machine learning."]
+         "I'm interested in data structures, programming languages, and machine learning."]
         [:p
          "Prior to Cornell, I was an undergrad at Williams College, "
-         "where I wrote a thesis on filters advised by "
+         "where I worked on atomicity analysis with "
+         [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
+         " and wrote a thesis on filters advised by "
          [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
          " and "
          [link {:url "http://mccauleysam.com/"} "Sam McCauley"]
@@ -238,36 +245,46 @@
       [section {:header "Research"}
        [simple-list {}
         [paper
-         "Telescoping Filter: A Practical Adaptive Filter"
+         [:span 
+          "Telescoping Filter: A Practical Adaptive Filter"
+          " "
+          [link {:url "https://github.com/djslzx/telescoping-filter"}
+           "(Code)"]]
          [:span [name-emph "David J. Lee"] ", Samuel McCauley, Shikha Singh, and Max Stein."]
-         [:span "European Symposium on Algorithms (" 
-          [:span {:style small-caps} 
-           "ESA"] 
-          "), 2021." ]]
+         [:span "European Symposium on Algorithms (ESA), 2021." ]]
         [paper
-         "A Practical Adaptive Quotient Filter"
+         [:span  
+          "A Practical Adaptive Quotient Filter"
+          " "
+          [link {:url thesis} "(Thesis)"]]
          [:span
-          [name-emph "David J. Lee"] ". Senior thesis, 2021. "
+          [name-emph "David J. Lee"] 
+          ". Undergraduate thesis, 2021. "
           "Advised by " [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
           " and " [link {:url "http://mccauleysam.com/"} "Sam McCauley"] "."]]
         [paper
-         [:span "Virtual Multicrossings and Petal Diagrams for Virtual Knots and Links " [link {:url "https://arxiv.org/abs/2103.08314"} "(Arxiv)"]]
+         [:span 
+          "Virtual Multicrossings and Petal Diagrams for Virtual Knots and Links"
+          " "
+          [link {:url "https://arxiv.org/abs/2103.08314"} "(paper)"]] 
          [:span 
           "Colin Adams, Chaim Even-Zohar, Jonah Greenberg, Reuben Kaufman, "
           [name-emph "David Lee"]
           ", Darin Li, Dustin Ping, Theodore Sandstrom, and Xiwen Wang. In Submission."]]
         [paper
-         "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
+         [:span 
+          "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
+          " "
+          [link {:url poster} "(Poster)"]]
          [:span
-          "Margaret Allen, " [name-emph "David J. Lee"] ". "
-          [link {:url poster} "Poster"] ", 2019. "
+          "Margaret Allen, " [name-emph "David J. Lee"] ". Poster, 2019. "
           "With " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
           " for " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]]]]
 
       [section {:header "Side Projects"}
        [simple-list {}
         [project {:title [:span "Learned Bloom Filters"
-                          " " [link {:url "https://github.com/djslzx/learned-filters"} "(GitHub)"]]
+                          " " [link {:url "https://github.com/djslzx/learned-filters"} "(Code)"]]
                   :year  "Fall 2020"
                   :desc  [:p "I implemented learning-augmented Bloom filters in Python using PyTorch, "
                           "working off of two papers ["
@@ -277,7 +294,7 @@
                           "]. "
                           "Nominated for the 2021 Ward Prize, an annual prize awarded to the best student project in the Williams College CS Department."]}]
         [project {:title [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol"
-                          " " [link {:url "https://github.com/shvmsptl/footprint"} "(GitHub)"]]
+                          " " [link {:url "https://github.com/shvmsptl/footprint"} "(Code)"]]
                   :year  "Spring 2020"
                   :desc  [:p "A peer-to-peer digital contact tracing protocol that uses location point data (e.g. GPS) from cellular
                               devices to alert users of potential virus transmission events without compromising user anonymity.
@@ -289,7 +306,7 @@
                               mutation is limited to the namespace handling the engine's interface with a web view. Contact me for code."]}]
         [project {:title [:span
                           "Augmented-Reality Drawing for iOS"
-                          " " [link {:url "https://github.com/djslzx/ar-drawing"} "(GitHub)"]]
+                          " " [link {:url "https://github.com/djslzx/ar-drawing"} "(Code)"]]
                   :year  "Fall 2018"
                   :desc  [:span
                           [:p "I wrote an iOS application that lets users draw 3D curves by moving their devices.
@@ -321,7 +338,6 @@
                            :color            dark-gray
                            :background-color bkg-color}}
       "Last updated " last-updated ". "
-      "Written in ClojureScript " [link {:url   "https://github.com/djslzx/djslzx.github.io"
-                                         :style {:text-decoration "none"}}
+      "Written in ClojureScript " [link {:url "https://github.com/djslzx/djslzx.github.io"}
                                    "(Source)"]
       "."]]))
