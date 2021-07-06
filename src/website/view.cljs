@@ -33,28 +33,25 @@
 (def poster "files/synchronicity19.pdf")
 (def thesis "files/thesis.pdf")
 
+(def small-caps
+  {:text-transform "uppercase"
+   :letter-spacing "0.08em"
+   :font-size      "85%"})
+
 (defn link
   [{url   :url
     style :style
     class :class} & children]
   [:a {:style (if-not style 
-                {:font-family sans
-                 :font-size "85%"
-                 :font-weight regular-weight
-                 :text-transform "uppercase"
-                 :letter-spacing "0.08em"}
+                 (merge small-caps 
+                        {:font-family sans
+                         :font-weight regular-weight})
                 style)
        :href   url
        :class  class
        :target "_blank"
        :rel    "noopener noreferrer"}
    children])
-
-(def small-caps
-  {:font-family    sans
-   :text-transform "uppercase"
-   :letter-spacing "0.08em"
-   :font-size      "85%"})
 
 (defn name-emph [x]
   [:span {:style {}}
@@ -90,7 +87,8 @@
   [title authors & rest]
   [:div.paper {:style {:margin-bottom "1rem"}}
    [:div {:style {:font-weight medium-weight
-                  :font-family sans}}
+                  :font-family sans
+                  :margin-bottom 2}}
     title]
    [:div {:style {:margin "0 "}}
     authors]
@@ -259,7 +257,7 @@
           [link {:url thesis} "(Thesis)"]]
          [:span
           [name-emph "David J. Lee"] 
-          ". Undergraduate thesis, 2021. "
+          ". Undergraduate thesis, 2021. " [:br]
           "Advised by " [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
           " and " [link {:url "http://mccauleysam.com/"} "Sam McCauley"] "."]]
         [paper
@@ -277,7 +275,7 @@
           " "
           [link {:url poster} "(Poster)"]]
          [:span
-          "Margaret Allen, " [name-emph "David J. Lee"] ". Poster, 2019. "
+          "Margaret Allen, " [name-emph "David J. Lee"] ", 2019. "
           "With " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
           " for " [link {:url "http://www.cs.williams.edu/~freund/synchronicity/"} "Synchronicity"] "."]]]]
 
