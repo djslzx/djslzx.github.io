@@ -20,7 +20,7 @@
 (def bold-weight 700)
 
 ; Font families
-(def serif "Newsreader")
+(def serif "Newsreader, serif")
 (def sans "Jost, sans serif")
 
 ; File locations
