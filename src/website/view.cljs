@@ -38,14 +38,17 @@
    :letter-spacing "0.08em"
    :font-size      "85%"})
 
+(def link-style
+  (merge small-caps
+         {:font-family sans
+          :font-weight regular-weight}))
+
 (defn link
   [{url   :url
     style :style
     class :class} & children]
   [:a {:style (if-not style 
-                 (merge small-caps 
-                        {:font-family sans
-                         :font-weight regular-weight})
+                link-style
                 style)
        :href   url
        :class  class
@@ -53,8 +56,23 @@
        :rel    "noopener noreferrer"}
    children])
 
+(defn embedded-link
+  "Take in a sequence of items, which can either be strings or vectors containing 
+   string-url pairs"
+  [& items]
+  [:span {:style link-style}
+   (map (fn [item]
+          (if (vector? item)
+            (let [[str url] item]
+              [:a {:href url
+                   :target "_blank"
+                   :rel "noopener noreferrer"}
+               str])
+            item))
+        items)])
+
 (defn name-emph [x]
-  [:span {:style {}}
+  [:span {:style {:text-decoration (str underline-color " underline")}}
    x])
 
 (defn fserif [x] 
@@ -227,34 +245,35 @@
          "I'm interested in data structures, programming languages, and machine learning."]
         [:p
          "Prior to Cornell, I was an undergrad at Williams College, "
-         "where I worked on atomicity analysis with "
-         [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
-         " and wrote a thesis on filters advised by "
+         "where I wrote a thesis on filters advised by "
          [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"]
          " and "
          [link {:url "http://mccauleysam.com/"} "Sam McCauley"]
+         " and worked on atomicity analysis with "
+         [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
          "."]]
        [:div
         [simple-list {:font-family sans}
          [link {:url cv} "CV"]
          [link {:url "https://github.com/djslzx"} "GitHub"]
-         [link {:url "mailto:djslzx@gmail.com"} "Email"]]]]
+         [link {:url "mailto:djl328@cornell.edu"} "Email"]]]]
 
       [section {:header "Research"}
        [simple-list {}
         [paper
          [:span 
           "Telescoping Filter: A Practical Adaptive Filter"
-          " "
-          [link {:url "https://github.com/djslzx/telescoping-filter"}
-           "(Code)"]]
+          [embedded-link " ("
+           ["Paper" "https://arxiv.org/abs/2107.02866"]
+           ", "
+           ["Code" "https://github.com/djslzx/telescoping-filter"]
+           ")"]]
          [:span [name-emph "David J. Lee"] ", Samuel McCauley, Shikha Singh, and Max Stein."]
          [:span "European Symposium on Algorithms (ESA), 2021." ]]
         [paper
          [:span  
           "A Practical Adaptive Quotient Filter"
-          " "
-          [link {:url thesis} "(Thesis)"]]
+          [embedded-link " (" ["Thesis" thesis] ")"]]
          [:span
           [name-emph "David J. Lee"] 
           ". Undergraduate thesis, 2021. " [:br]
@@ -263,8 +282,7 @@
         [paper
          [:span 
           "Virtual Multicrossings and Petal Diagrams for Virtual Knots and Links"
-          " "
-          [link {:url "https://arxiv.org/abs/2103.08314"} "(paper)"]] 
+          [embedded-link " (" ["paper" "https://arxiv.org/abs/2103.08314"] ")"]] 
          [:span 
           "Colin Adams, Chaim Even-Zohar, Jonah Greenberg, Reuben Kaufman, "
           [name-emph "David Lee"]
@@ -272,8 +290,7 @@
         [paper
          [:span 
           "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
-          " "
-          [link {:url poster} "(Poster)"]]
+          [embedded-link " (" ["Poster" poster] ")"]]
          [:span
           "Margaret Allen, " [name-emph "David J. Lee"] ", 2019. "
           "With " [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"]
@@ -281,8 +298,8 @@
 
       [section {:header "Side Projects"}
        [simple-list {}
-        [project {:title [:span "Learned Bloom Filters"
-                          " " [link {:url "https://github.com/djslzx/learned-filters"} "(Code)"]]
+        [project {:title [:span "Learned Bloom Filters "
+                          [embedded-link "(" ["Code" "https://github.com/djslzx/learned-filters"] ")"]]
                   :year  "Fall 2020"
                   :desc  [:p "I implemented learning-augmented Bloom filters in Python using PyTorch, "
                           "working off of two papers ["
@@ -291,8 +308,8 @@
                           [link {:url "https://papers.nips.cc/paper/2018/file/0f49c89d1e7298bb9930789c8ed59d48-Paper.pdf"} "2"]
                           "]. "
                           "Nominated for the 2021 Ward Prize, an annual prize awarded to the best student project in the Williams College CS Department."]}]
-        [project {:title [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol"
-                          " " [link {:url "https://github.com/shvmsptl/footprint"} "(Code)"]]
+        [project {:title [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol "
+                          [embedded-link "(" ["Code" "https://github.com/shvmsptl/footprint"] ")"]]
                   :year  "Spring 2020"
                   :desc  [:p "A peer-to-peer digital contact tracing protocol that uses location point data (e.g. GPS) from cellular
                               devices to alert users of potential virus transmission events without compromising user anonymity.
@@ -303,8 +320,8 @@
                               The engine core consists entirely of pure functions that are rigorously tested —
                               mutation is limited to the namespace handling the engine's interface with a web view. Contact me for code."]}]
         [project {:title [:span
-                          "Augmented-Reality Drawing for iOS"
-                          " " [link {:url "https://github.com/djslzx/ar-drawing"} "(Code)"]]
+                          "Augmented-Reality Drawing for iOS "
+                          [embedded-link "(" ["Code" "https://github.com/djslzx/ar-drawing"] ")"]]
                   :year  "Fall 2018"
                   :desc  [:span
                           [:p "I wrote an iOS application that lets users draw 3D curves by moving their devices.
