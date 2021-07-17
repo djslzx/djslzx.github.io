@@ -29,10 +29,21 @@ h1, h2, h3, h4, h5, h6 {
 
 a {
   color: inherit;
+  padding: 3px 0;
   text-decoration: #dfe5e9 underline;
 }
 
+/*a:after {*/
+/*  content: "\FEFF°";*/
+/*  margin-left: 0.10em;*/
+/*  color: #933;*/
+/*  font-size: 90%;*/
+/*  font-feature-settings: "caps";*/
+/*  font-variant-numeric: normal;*/
+/*}*/
+
 a:hover {
   text-decoration: inherit;
+  border-radius: 3px;
   background-color: #e9eef2;
 }

@@ -1,6 +1,6 @@
 (ns website.view
-  (:require [clojure.string :as str]
-            [reagent.core :as reagent]))
+  (:require [reagent.core :as reagent]
+            [reagent.impl.component :as comp]))
 
 (def last-updated "July 2021")
 
@@ -39,15 +39,14 @@
    :font-size      "85%"})
 
 (def link-style
-  {:font-weight regular-weight})
+  {:font-family serif
+   :font-weight medium-weight})
 
 (defn link
   [{url   :url
     style :style
     class :class} & children]
-  [:a {:style (if-not style 
-                link-style
-                style)
+  [:a {:style  (merge link-style style)
        :href   url
        :class  class
        :target "_blank"
@@ -62,9 +61,9 @@
    (map (fn [item]
           (if (vector? item)
             (let [[str url] item]
-              [:a {:href url
+              [:a {:href   url
                    :target "_blank"
-                   :rel "noopener noreferrer"}
+                   :rel    "noopener noreferrer"}
                str])
             item))
         items)])
@@ -73,19 +72,11 @@
   [:span {:style {}}
    x])
 
-(defn fserif [x] 
-  [:span {:style {:font-family serif}}
-   x])
-
-(defn fsans [x] 
-  [:span {:style {:font-family sans}}
-   x])
-
 (defn simple-list
-  [styles & items]
-  [:ul {:style (merge styles
-                      {:list-style   "none"
-                       :padding-left 0})}
+  [style & items]
+  [:ul {:style (merge {:list-style   "none"
+                       :padding-left 0}
+                      style)}
    (map-indexed (fn [i x]
                   [:li {:key i} x])
                 items)])
@@ -102,26 +93,21 @@
 (defn paper
   [title authors & rest]
   [:div.paper {:style {:margin-bottom "1rem"}}
-   [:div {:style {:font-weight medium-weight
-                  :font-family sans
-                  :margin-bottom 2}}
+   [:h3 {:style {:font-weight   medium-weight
+                 :font-family   sans
+                 :margin-bottom "0.05rem"}}
     title]
-   [:div {:style {:margin "0 "}}
-    authors]
-   [:div {:style {:font-weight regular-weight}} 
-    rest]])
+   [:div authors]
+   [:div rest]])
 
 (defn project
   [{title :title
-    by    :by
     desc  :desc}]
-  [:div.project {:style {:margin-bottom "1.5rem"}}
-   [:h3 {:style {:margin 0
-                 :font-weight medium-weight}}
+  [:div.project {:style {:margin-bottom "1rem"}}
+   [:h3 {:style {:font-weight medium-weight
+                 :font-family sans
+                 :margin      "0 0 0.5rem"}}
     title]
-   (if (some? by)
-     [:div.by-line {:style {}}
-      by])
    [:div.description desc]])
 
 (defn course
@@ -134,7 +120,6 @@
     " "
     [:span {:style {:font-size   "90%"
                     :font-family sans
-                    :color       light-gray
                     :float       "right"}}
      sems]]
    [:div {:style {:clear "both"}}]])
@@ -160,10 +145,10 @@
   [title contents]
   (let [hidden? (reagent/atom true)]
     (fn []
-        [section {:header [:a {:on-click #(swap! hidden? not)}
-                           title]} 
-         (if-not @hidden?
-           contents)])))
+      [section {:header [:a {:on-click #(swap! hidden? not)}
+                         title]}
+       (if-not @hidden?
+         contents)])))
 
 (defn line
   ([thickness color]
@@ -181,34 +166,41 @@
                   :loop        "true"})
    sources])
 
-(defn ar-demo []
-  [:div.ar-demo {:style {:margin          "1rem 0"
-                         :display         "flex"
-                         :flex-direction  "row"
-                         :flex-wrap       "wrap"
-                         :justify-content "center"}}
-   [:div.video-wrapper {:style {:margin    "1rem"
-                                :max-width "400px"}}
-    [auto-play-video {:style {:width      "100%"
-                              :max-height "400px"
-                              :max-width  "400px"
-                              :padding    0}}
-     [:source {:src curve-webm :type "video/webm"}]
-     [:source {:src curve-mp4 :type "video/mp4"}]]
-    [:p {:style {:color     light-gray
-                 :font-size "smaller"}}
-     "An early demo showcasing different stroke thicknesses and colors."]]
-   [:div.video-wrapper {:style {:margin    "1rem"
-                                :max-width "400px"}}
-    [auto-play-video {:style {:width      "100%"
-                              :max-height "400px"
-                              :max-width  "400px"
-                              :padding    0}}
-     [:source {:src rainbow-webm :type "video/webm"}]
-     [:source {:src rainbow-mp4 :type "video/mp4"}]]
-    [:p {:style {:color     light-gray
-                 :font-size "smaller"}}
-     "A later demo showcasing a new brush type (flat) and color type (rainbow)."]]])
+(defn ar-demo
+  [small-screen?]
+  (let [video-size (if small-screen?
+                     400
+                     320)
+        wrapper-style (fn [direction] {:max-width video-size
+                                       :margin    (if small-screen?
+                                                    "1rem"
+                                                    (cond
+                                                      (= :left direction) "0 1rem 0 0"
+                                                      (= :right direction) "0 0 0 1rem"
+                                                      :else "1rem"))})
+        video-style {:width      "100%"
+                     :max-height video-size
+                     :max-width  video-size
+                     :padding    0}
+        caption (fn [text]
+                  [:p {:style {:color     light-gray
+                               :font-size "smaller"}}
+                   text])]
+    [:div.ar-demo {:style {:margin          "1rem 0"
+                           :display         "flex"
+                           :flex-direction  "row"
+                           :flex-wrap       "wrap"
+                           :justify-content "center"}}
+     [:div.video-wrapper {:style (wrapper-style :left)}
+      [auto-play-video {:style video-style}
+       [:source {:src curve-webm :type "video/webm"}]
+       [:source {:src curve-mp4 :type "video/mp4"}]]
+      (caption "An early demo showcasing different stroke thicknesses and colors.")]
+     [:div.video-wrapper {:style (wrapper-style :right)}
+      [auto-play-video {:style video-style}
+       [:source {:src rainbow-webm :type "video/webm"}]
+       [:source {:src rainbow-mp4 :type "video/mp4"}]]
+      (caption "A later demo showcasing a new brush type (flat) and color type (rainbow).")]]))
 
 (def steve
   [link {:url "http://dept.cs.williams.edu/~freund/index.html"} " Stephen Freund"])
@@ -216,27 +208,28 @@
 (def shikha
   [link {:url "http://cs.williams.edu/~shikha/"} "Shikha Singh"])
 
-(def sam 
+(def sam
   [link {:url "http://mccauleysam.com/"} "Sam McCauley"])
 
 (defn app
   [{{width  :width
      height :height} :size}]
-  (let [small-screen? (< width 720)]
+  (let [small-screen? (< width 720)
+        tiny-screen? (< width 560)]
     [:div.layout {:style {:display          "flex"
                           :flex-direction   "column"
                           :min-height       "100vh"
                           :color            text-color
                           :background-color bkg-color}}
-     (if-not small-screen? 
-       [:div {:style {:height "20px"
+     (if-not small-screen?
+       [:div {:style {:height           "20px"
                       :background-color "white"}}])
      [:div.main {:style {:box-sizing "border-box"
                          :max-width  720
                          :margin     "0 auto"
                          :padding    "0 1rem"
                          :flex       "1 1"}}
-      (comment 
+      (comment
         [:div.pic
          {:style (merge {:text-align "center"
                          :margin     "1rem"}
@@ -256,18 +249,22 @@
         "I'm an incoming Ph.D. student in computer science at Cornell University. "
         "I'm interested in data structures, programming languages, and machine learning."]
        [:p
-        "As an undergrad, I majored in math and computer science at Williams College. "
-        "At Williams, I worked on atomicity analysis with " steve " "
-        "and wrote a " [link {:url thesis}"thesis"] " on adaptive filters advised by " shikha " and " sam "."]]
+        "I received my bachelor's from Williams College, where I majored in math and computer science. "
+        "As an undergrad, I worked on adaptive filters and concurrent program analysis. "
+        "My " [link {:url thesis} "thesis"] " was supervised by " shikha " and " sam ". "]]
       [:div
-       [simple-list {:font-family sans}
-        [link {:url cv} "CV"]
-        [link {:url "https://github.com/djslzx"} "GitHub"]
-        [link {:url "mailto:djl328@cornell.edu"} "Email"]]]
+       (let [contact-link (fn [url txt]
+                            [link {:url   url
+                                   :style {}}
+                             txt])]
+         [simple-list {:font-family sans}
+          [contact-link cv "CV"]
+          [contact-link "https://github.com/djslzx" "GitHub"]
+          [contact-link "mailto:djl328@cornell.edu" "Email"]])]
       [section {:header "Research"}
        [simple-list {}
         [paper
-         [:span 
+         [:span
           "Telescoping Filter: A Practical Adaptive Filter"
           [embedded-link " ("
            ["Paper" "https://arxiv.org/abs/2107.02866"]
@@ -275,25 +272,25 @@
            ["Code" "https://github.com/djslzx/telescoping-filter"]
            ")"]]
          [:span [name-emph "David J. Lee"] ", Samuel McCauley, Shikha Singh, and Max Stein."]
-         [:span "European Symposium on Algorithms (ESA), 2021." ]]
+         [:span "European Symposium on Algorithms (ESA), 2021."]]
         [paper
-         [:span  
+         [:span
           "A Practical Adaptive Quotient Filter"
           [embedded-link " (" ["Thesis" thesis] ")"]]
          [:span
-          [name-emph "David J. Lee"] 
+          [name-emph "David J. Lee"]
           ". Undergraduate thesis, 2021. " [:br]
           "Advised by " shikha " and " sam "."]]
         [paper
-         [:span 
+         [:span
           "Virtual Multicrossings and Petal Diagrams for Virtual Knots and Links"
-          [embedded-link " (" ["Paper" "https://arxiv.org/abs/2103.08314"] ")"]] 
-         [:span 
+          [embedded-link " (" ["Paper" "https://arxiv.org/abs/2103.08314"] ")"]]
+         [:span
           "Colin Adams, Chaim Even-Zohar, Jonah Greenberg, Reuben Kaufman, "
           [name-emph "David Lee"]
           ", Darin Li, Dustin Ping, Theodore Sandstrom, and Xiwen Wang. In Submission."]]
         [paper
-         [:span 
+         [:span
           "Inferring Synchronization Disciplines to Verify Atomicity of Concurrent Code"
           [embedded-link " (" ["Poster" poster] ")"]]
          [:span
@@ -302,11 +299,19 @@
       [section {:header "Teaching"}
        [:div [:h3 "Teaching Assistant, Williams College"]
         [simple-list {}
-         [course "Principles of Programming Languages" "S19, F19, F20, S21"]
+         [course
+          (if tiny-screen?
+            "Programming Languages"
+            "Principles of Programming Languages")
+          "S19, F19, F20, S21"]
          [course "Software Methods" "S20"]
          [course "Intro to Computer Science" "F18"]
-         [course "Data Structures & Advanced Programming" "S18"]]]]
-      (comment 
+         [course
+          (if tiny-screen?
+            "Data Structures"
+            "Data Structures & Advanced Programming")
+          "S18"]]]]
+      (comment
         [section {:header "Academic Honors"}
          [simple-list {}
           [award "Sam Goldberg Colloquium Prize in Computer Science" 2021
@@ -318,8 +323,9 @@
         [project {:title [:span "Learned Bloom Filters "
                           [embedded-link "(" ["Code" "https://github.com/djslzx/learned-filters"] ")"]]
                   :year  "Fall 2020"
-                  :desc  [:p "I implemented learning-augmented Bloom filters in Python using PyTorch, "
-                          "working off of two papers ["
+                  :desc  [:span
+                          "I implemented learning-augmented Bloom filters in Python using PyTorch, "
+                          "working off of two recent papers ["
                           [link {:url "https://arxiv.org/abs/1712.01208"} "1"]
                           ", "
                           [link {:url "https://papers.nips.cc/paper/2018/file/0f49c89d1e7298bb9930789c8ed59d48-Paper.pdf"} "2"]
@@ -329,23 +335,29 @@
         [project {:title [:span "A P2P Privacy-Preserving Location-Based Proximity Tracing Protocol "
                           [embedded-link "(" ["Code" "https://github.com/shvmsptl/footprint"] ")"]]
                   :year  "Spring 2020"
-                  :desc  [:p "A peer-to-peer digital contact tracing protocol that uses location point data (e.g. GPS) from cellular
-                              devices to alert users of potential virus transmission events without compromising user anonymity.
-                              Simulated in Go using Apache Cassandra. Nominated for the 2020 Ward Prize."]}]
+                  :desc  [:span
+                          "I designed a peer-to-peer digital contact tracing protocol that uses location "
+                          "point data (e.g. GPS) from cellular devices to alert users of potential virus "
+                          "transmission events without compromising user anonymity. "
+                          "Simulated in Go using Apache Cassandra. Nominated for the 2020 Ward Prize."]}]
         [project {:title [:span "Hearthstone in Lisp"]
                   :year  "Fall 2019"
-                  :desc  [:p "I rewrote the Hearthstone game engine in Clojure, a Lisp hosted on the JVM, following functional programming best practices.
-                              The engine core consists entirely of pure functions that are rigorously tested —
-                              mutation is limited to the namespace handling the engine's interface with a web view. Contact me for code."]}]
+                  :desc  [:span
+                          "I rewrote the Hearthstone game engine in Clojure "
+                          "following functional programming best practices. "
+                          "The engine core consists entirely of pure functions that are rigorously tested — "
+                          "mutation is limited to the namespace handling the engine's interface with a web view. "
+                          "Contact me for code."]}]
         [project {:title [:span
                           "Augmented-Reality Drawing for iOS "
                           [embedded-link "(" ["Code" "https://github.com/djslzx/ar-drawing"] ")"]]
                   :year  "Fall 2018"
                   :desc  [:span
-                          [:p "I wrote an iOS application that lets users draw 3D curves by moving their devices.
-                               Built using ARKit (to determine device position from camera feed) and "
-                           "SceneKit (to generate 3D geometries)."]
-                          [ar-demo]]}]]]]
+                          [:span
+                           "I wrote an iOS application that lets users draw 3D curves by moving their devices. "
+                           "Built using ARKit, to determine device position from camera feed, and "
+                           "SceneKit to generate 3D geometries."]
+                          [ar-demo small-screen?]]}]]]]
 
      [:div.footer {:style {:text-align       "center"
                            :margin-top       "3rem"
